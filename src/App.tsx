@@ -3,8 +3,8 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Home from "./Pages/Home";
 import LogIn from "./Pages/Auth/LogIn";
 import Variations from "./Pages/Products/Variations";
-import EditProduct from "./Pages/Products/EditProduct";
 import Stock from "./Pages/Stock";
+import ProductList from "./Pages/Products/ProductList"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
@@ -43,7 +43,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardLayout>
-                  <EditProduct />
+                  <ProductList/>
                 </DashboardLayout>
               </ProtectedRoute>
             }

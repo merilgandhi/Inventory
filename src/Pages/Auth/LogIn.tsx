@@ -34,6 +34,7 @@ const LogIn: React.FC = () => {
 
         const user = {
           id: Date.now(),
+          username: res.data.data.username,
           name: res.data.data.username,
           email: res.data.data.email,
         };
