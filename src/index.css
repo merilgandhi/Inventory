@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+.toast-slide-in {
+  animation: slideIn 0.35s ease forwards;
+}
+@keyframes slideIn {
+  0% { transform: translateX(40px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.toast-slide-out {
+  animation: slideOut 0.35s ease forwards;
+}
+@keyframes slideOut {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(40px); opacity: 0; }
+}
+
+.toast-progress {
+  height: 3px;
+  animation: progressBar linear forwards;
+}
+@keyframes progressBar {
+  from { width: 100%; }
+  to { width: 0%; }
+}
