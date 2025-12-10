@@ -83,7 +83,7 @@ const Seller: React.FC = () => {
     try {
       const res = await client.delete(`/sellers/${id}`);
       toast.custom(() => (
-        <SuccessToast message={res?.data?.message || "Seller deleted"} />
+        <ErrorToast message={res?.data?.message || "Seller deleted"} />
       ));
 
       fetchSellers();
