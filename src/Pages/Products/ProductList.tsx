@@ -31,7 +31,6 @@ const ProductList = () => {
   const [products, setProducts] = useState<Product[]>([]);
 
   const [searchName, setSearchName] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [limit, setLimit] = useState("10");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -51,7 +50,6 @@ const ProductList = () => {
       params.set("limit", limit);
 
       if (searchName.trim()) params.set("search", searchName);
-      if (statusFilter) params.set("isActive", statusFilter);
 
       const res = await client.get(`/products?${params.toString()}`);
 
@@ -66,8 +64,7 @@ const ProductList = () => {
 
   useEffect(() => {
     fetchProducts();
-    // eslint-disable-next-line
-  }, [searchName, statusFilter, currentPage, limit]);
+  }, [searchName, currentPage, limit]);
 
   const openCreateDrawer = () => {
     setSelectedProductId(null);
@@ -132,7 +129,7 @@ const ProductList = () => {
                     placeholder="Search..."
                     value={searchName}
                     onChange={(e) => setSearchName(e.target.value)}
-                    className="px-2 py-1 text-black border rounded text-sm"
+                    className="px-2 py-1 text-white border rounded text-sm"
                   />
                 </div>
               </th>
@@ -143,15 +140,6 @@ const ProductList = () => {
               <th className="p-3">
                 <div className="flex flex-col gap-1">
                   <span>Active</span>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-2 py-1 text-black border rounded text-sm"
-                  >
-                    <option value="">All</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
                 </div>
               </th>
 

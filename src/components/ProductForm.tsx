@@ -1,5 +1,3 @@
-// --- PRODUCT FORM (NO VALIDATION) ---
-
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import client from "../Services/clientServices";
