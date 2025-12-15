@@ -7,6 +7,7 @@ import client from "../../Services/clientServices";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { ErrorToast, SuccessToast } from "../../components/ToastStyles";
+import Header from "../../Global/Header";
 
 const LogIn: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -64,9 +65,7 @@ const LogIn: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex flex-col">
 
-      <div className="bg-slate-950 text-white py-4 shadow-lg px-8 text-2xl font-bold tracking-wide">
-        InventoryApp
-      </div>
+      <Header />
 
       <div className="flex flex-1 justify-center items-center px-6">
         <div className="w-full max-w-lg bg-white shadow-xl border border-gray-200 rounded-2xl p-10">
