@@ -7,6 +7,7 @@ import ProductList from "./Pages/Products/ProductList"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Seller from "./Pages/Seller";
+import Orders from "./Pages/Orders";
 
 function App() {
   return (
@@ -50,11 +51,22 @@ function App() {
           />
 
           <Route
-            path="/stock"
+            path="/sellers"
             element={
               <ProtectedRoute>
                 <DashboardLayout>
                   <Seller />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <Orders />
                 </DashboardLayout>
               </ProtectedRoute>
             }
