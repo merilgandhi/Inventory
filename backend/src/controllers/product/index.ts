@@ -3,9 +3,7 @@ import { Product, ProductVariation, Variation, User } from "@models/index";
 import { Op, where } from "sequelize";
 import { sequelize } from "@config/database";
 
-// ===============================
-// LIST ALL PRODUCTS
-// ===============================
+
 export const listAll = async (req: Request, res: Response) => {
   try {
     const { page, limit, offset } = req.pagination!;

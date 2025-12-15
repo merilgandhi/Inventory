@@ -59,7 +59,6 @@ Variation.init(
     tableName: "variations",
     timestamps: true,
     paranoid: true,
-    
   }
 );
 

@@ -4,10 +4,10 @@ export const validate = (schema) => async (req, res, next) => {
   try {
     const validated = await schema.validate(req.body, {
       abortEarly: false,
-      stripUnknown: true,  // REMOVE unknown fields
+      stripUnknown: true, 
     });
 
-    req.body = validated; // REQUIRED – apply transformed values
+    req.body = validated; 
     next();
     
   } catch (err) {
