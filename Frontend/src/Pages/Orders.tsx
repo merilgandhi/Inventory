@@ -310,10 +310,11 @@ export default function Orders(): JSX.Element {
                       color: "white",
                       padding: "12px",
                       border: "1px solid rgba(0,0,0,0.08)",
+                      width: "100px",
                     }}
                     className="text-right"
                   >
-                    GST%
+                    GST
                   </th>
                   <th
                     style={{
@@ -323,6 +324,7 @@ export default function Orders(): JSX.Element {
                       color: "white",
                       padding: "12px",
                       border: "1px solid rgba(0,0,0,0.08)",
+                      width: "110px",
                     }}
                     className="text-right"
                   >
@@ -387,7 +389,7 @@ export default function Orders(): JSX.Element {
                                     {c.variantName}
                                   </div>
                                   <div className="text-[11px] text-slate-600">
-                                    ₹{c.price}
+                                    ₹{c.price} GST {product.gst}%
                                   </div>
                                 </div>
 
@@ -436,12 +438,6 @@ export default function Orders(): JSX.Element {
                                     </div>
                                   </div>
                                 </div>
-
-                                {/* total row */}
-                                <div className="mt-2 border-t border-slate-300 pt-1 flex justify-between text-[11px] font-semibold text-slate-800">
-                                  <span>Tot</span>
-                                  <span>₹ {c.total!.toFixed(2)}</span>
-                                </div>
                               </div>
                             </td>
                           );
@@ -452,7 +448,7 @@ export default function Orders(): JSX.Element {
                           ₹ {pTotals.subtotal.toFixed(2)}
                         </td>
                         <td className="p-3 border text-right">
-                          {product.gst}%
+                        ₹ {calcGstAmount(pTotals.subtotal, product.gst ?? 0).toFixed(2)}
                         </td>
                         <td className="p-3 border text-right font-semibold">
                           ₹ {pTotals.total.toFixed(2)}
