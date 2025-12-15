@@ -46,9 +46,7 @@ export const createNewProductSchema = yup.object({
       .required("Price is required")
       .min(1, "Price must be at least 1"),
 
-    productQrCode: yup
-      .string()
-      .required("Product QR code is required"),
+    productQrCode: yup.string().required("Product QR code is required"),
 
     boxQuantity: yup
       .number()
@@ -56,14 +54,41 @@ export const createNewProductSchema = yup.object({
       .required("Box quantity is required")
       .min(1, "Box quantity must be at least 1"),
 
-    boxQrCode: yup
-      .string()
-      .required("Box QR code is required"),
+    boxQrCode: yup.string().required("Box QR code is required"),
 
     stockInHand: yup
       .number()
       .typeError("Stock must be a number")
       .required("Stock in hand is required")
       .min(0, "Stock cannot be negative"),
-  })
+  }),
+});
+
+
+export const createOrderSchema = yup.object({
+  sellerId: yup
+    .number()
+    .integer()
+    .positive()
+    .required("sellerId is required"),
+
+  items: yup
+    .array()
+    .of(
+      yup.object({
+        productVariationId: yup
+          .number()
+          .integer()
+          .positive()
+          .required("productVariationId is required"),
+
+        quantity: yup
+          .number()
+          .integer()
+          .positive()
+          .required("quantity is required"),
+      })
+    )
+    .min(1, "At least one order item is required")
+    .required("items are required"),
 });

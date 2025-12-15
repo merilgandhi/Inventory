@@ -1,66 +1,70 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "@config/database";
 
-
-interface OrdersAttributes {
+interface OrderAttributes {
   id: number;
   sellerId: number;
-  productId:number;
-  productVariationId:number;
-  quantity:number;
+  subtotal: number;
+  gstTotal: number;
+  grandTotal: number;
+  status: "DRAFT" | "COMPLETED" | "CANCELLED";
   deletedAt?: Date;
 }
 
+interface OrderCreationAttributes
+  extends Optional<OrderAttributes, "id" | "subtotal" | "gstTotal" | "grandTotal" | "status"> {}
 
-interface OrdersCreationAttributes extends Optional<OrdersAttributes, "id"> {}
+export class Order
+  extends Model<OrderAttributes, OrderCreationAttributes>
+  implements OrderAttributes {
 
+  public id!: number;
+  public sellerId!: number;
+  public subtotal!: number;
+  public gstTotal!: number;
+  public grandTotal!: number;
+  public status!: "DRAFT" | "COMPLETED" | "CANCELLED";
+  public deletedAt?: Date;
+}
 
-
-export class Orders
-  extends Model<OrdersAttributes, OrdersCreationAttributes>
-  implements ProductAttributes
+Order.init(
   {
-    public id!: number;
-    public sellerId!: number;
-    public productId!: number;
-    public productVariationId!: number;
-    public quantity!: number;
-    public deletedAt?: Date;
-  }
-
-Orders.init({
-  id: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    autoIncrement: true,
-    primaryKey: true,
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    sellerId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
+    subtotal: {
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0,
+    },
+    gstTotal: {
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0,
+    },
+    grandTotal: {
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0,
+    },
+    status: {
+      type: DataTypes.ENUM("DRAFT", "COMPLETED", "CANCELLED"),
+      defaultValue: "COMPLETED",
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
-  sellerId:{
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false
-  },
-  productId:{
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull:false
-  },
-  productVariationId:{
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull:false
-  },
-  quantity:{
-    type:DataTypes.INTEGER.UNSIGNED,
-    allowNull:false
-  },
-  deletedAt:{
-    type:DataTypes.DATE,
-    allowNull:true
-  }
-
-},{
+  {
     sequelize,
     tableName: "orders",
     timestamps: true,
     paranoid: true,
-    
-});
+  }
+);
 
-export default Orders;
+export default Order;

@@ -1,6 +1,7 @@
-import { ProductVariation, Product, Variation } from "@models/index";
+import { Request, Response } from "express";
+import { ProductVariation, Product, Variation, Orders, OrderItem } from "@models/index";
 import { Op } from "sequelize";
-
+import { sequelize } from "@config/database";
 
 
 export const checkBarcode = async (req: Request, res: Response) => {
@@ -65,8 +66,7 @@ export const checkBarcode = async (req: Request, res: Response) => {
   }
 };
 
-
-export const createProductfromScan = async (req: Request, res: Response) => {
+export const createProductFromScan = async (req: Request, res: Response) => {
   const t = await sequelize.transaction();
 
   try {
@@ -117,5 +117,142 @@ export const createProductfromScan = async (req: Request, res: Response) => {
     console.error(err);
     await t.rollback();
     return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+
+export const createOrder = async (req: Request, res: Response) => {
+  const t = await sequelize.transaction();
+
+  try {
+    const sellerId = req.body.sellerId;
+    const items = req.body.items; 
+
+    if (!sellerId || !Array.isArray(items) || items.length === 0) {
+      await t.rollback();
+      return res.status(400).json({
+        success: false,
+        message: "Invalid order payload",
+      });
+    }
+
+    let subtotal = 0;
+    let gstTotal = 0;
+
+ 
+    const order = await Orders.create(
+      {
+        sellerId,
+        subtotal: 0,
+        gstTotal: 0,
+        grandTotal: 0,
+        status: "COMPLETED",
+      },
+      { transaction: t }
+    );
+
+
+    for (const item of items) {
+      const { productVariationId, quantity } = item;
+
+      if (!productVariationId || quantity <= 0) {
+        await t.rollback();
+        return res.status(400).json({
+          success: false,
+          message: "Invalid productVariationId or quantity",
+        });
+      }
+
+      const [affected] = await ProductVariation.update(
+        {
+          stockInHand: sequelize.literal(
+            `stockInHand - ${sequelize.escape(quantity)}`
+          ),
+        },
+        {
+          where: {
+            id: productVariationId,
+            stockInHand: { [Op.gte]: quantity },
+          },
+          transaction: t,
+        }
+      );
+
+      if (affected === 0) {
+        await t.rollback();
+        return res.status(400).json({
+          success: false,
+          message: "Insufficient stock",
+        });
+      }
+
+      const pv = await ProductVariation.findByPk(productVariationId, {
+        transaction: t,
+      });
+
+      if (!pv) {
+        await t.rollback();
+        return res.status(404).json({
+          success: false,
+          message: "Product variation not found",
+        });
+      }
+
+      const unitPrice = Number(pv.price);
+      const gstPercent = Number(pv.gst || 0);
+
+      const lineBase = unitPrice * quantity;
+      const lineGst = (lineBase * gstPercent) / 100;
+      const lineTotal = lineBase + lineGst;
+
+      subtotal += lineBase;
+      gstTotal += lineGst;
+
+      await OrderItem.create(
+        {
+          orderId: order.id,
+          productId: pv.productId,
+          productVariationId,
+          quantity,
+          unitPrice,
+          gstPercent,
+          gstAmount: lineGst,
+          total: lineTotal,
+        },
+        { transaction: t }
+      );
+    }
+
+    const grandTotal = subtotal + gstTotal;
+
+
+    await order.update(
+      {
+        subtotal,
+        gstTotal,
+        grandTotal,
+      },
+      { transaction: t }
+    );
+
+    await t.commit();
+
+    return res.status(201).json({
+      success: true,
+      message: "Order created successfully",
+      data:
+      {orderId: order.id,
+      subtotal,
+      gstTotal,
+      grandTotal,}
+    });
+  } catch (err) {
+    console.error("createOrder error:", err);
+    await t.rollback();
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create order",
+    });
   }
 };
