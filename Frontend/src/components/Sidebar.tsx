@@ -8,12 +8,9 @@ import {
   FiChevronDown,
   FiMenu,
   FiX,
+  FiShoppingCart,
 } from "react-icons/fi";
 
-/**
- * FUTURISTIC FIXED SIDEBAR (Desktop)
- * + SLIDE-IN SIDEBAR (Mobile)
- */
 const Sidebar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [productOpen, setProductOpen] = useState(true);
@@ -25,7 +22,6 @@ const Sidebar: React.FC = () => {
     <>
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex flex-col w-64 h-screen bg-[#0B132B]/95 border-r border-[#1C2541] shadow-xl backdrop-blur-xl fixed left-0 top-0 z-40">
-        
         {/* LOGO TITLE */}
         <div className="px-6 py-6 border-b border-[#1C2541]">
           <h1 className="text-2xl font-bold tracking-wide text-slate-200">
@@ -35,7 +31,6 @@ const Sidebar: React.FC = () => {
 
         {/* MENU */}
         <nav className="mt-6 px-4 space-y-5">
-
           {/* MANAGE PRODUCT */}
           <div>
             <button
@@ -48,12 +43,15 @@ const Sidebar: React.FC = () => {
                 <FiShoppingBag className="text-amber-300" size={18} />
                 Manage Product
               </span>
-              <FiChevronDown className={`${productOpen ? "rotate-180" : ""} transition text-slate-200`} />
+              <FiChevronDown
+                className={`${
+                  productOpen ? "rotate-180" : ""
+                } transition text-slate-200`}
+              />
             </button>
 
             {productOpen && (
               <div className="ml-6 mt-3 space-y-3 animate-fadeIn">
-
                 <Link
                   to="/products/edit"
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg transition border 
@@ -79,26 +77,34 @@ const Sidebar: React.FC = () => {
                   <FiGitMerge size={16} className="text-amber-300" />
                   Variations
                 </Link>
-
               </div>
             )}
           </div>
 
           {/* SELLERS */}
           <Link
-            to="/stock"
+            to="/sellers"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1C2541]
               border border-[#3A506B]/30 transition hover:border-amber-400
               ${
-                isActive("/stock")
-                  ? "border-amber-400 bg-amber-400/20"
-                  : ""
+                isActive("/sellers") ? "border-amber-400 bg-amber-400/20" : ""
               } text-slate-200`}
           >
             <FiUserCheck className="text-amber-300" size={18} />
             Sellers
           </Link>
-
+          <Link
+            to="/orders"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition border hover:border-amber-400
+                  ${
+                    isActive("/orders")
+                      ? "bg-amber-400/20 border-amber-300"
+                      : "border-transparent hover:bg-[#1C2541]"
+                  } text-slate-200`}
+          >
+            <FiShoppingCart size={16} className="text-amber-300" />
+            Order
+          </Link>
         </nav>
       </aside>
 
@@ -114,9 +120,7 @@ const Sidebar: React.FC = () => {
       {/* MOBILE SLIDE-IN SIDEBAR */}
       {menuOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50">
-          
           <aside className="w-64 h-full bg-[#0B132B] fixed left-0 top-0 shadow-xl p-4 animate-slideIn">
-            
             {/* CLOSE BUTTON */}
             <button
               onClick={() => setMenuOpen(false)}
@@ -134,7 +138,6 @@ const Sidebar: React.FC = () => {
 
             {/* MOBILE MENU */}
             <nav className="mt-6 px-2 space-y-5">
-
               {/* MANAGE PRODUCT */}
               <div>
                 <button
@@ -147,12 +150,13 @@ const Sidebar: React.FC = () => {
                     <FiShoppingBag className="text-amber-300" size={18} />
                     Manage Product
                   </span>
-                  <FiChevronDown className={`${productOpen ? "rotate-180" : ""} transition`} />
+                  <FiChevronDown
+                    className={`${productOpen ? "rotate-180" : ""} transition`}
+                  />
                 </button>
 
                 {productOpen && (
                   <div className="ml-6 mt-2 space-y-2 animate-fadeIn text-slate-200">
-
                     <Link
                       to="/products/edit"
                       onClick={() => setMenuOpen(false)}
@@ -176,7 +180,7 @@ const Sidebar: React.FC = () => {
 
               {/* SELLERS */}
               <Link
-                to="/stock"
+                to="/sellers"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1C2541]
                 border border-[#3A506B]/30 hover:border-amber-400 transition text-slate-200"
@@ -185,9 +189,17 @@ const Sidebar: React.FC = () => {
                 Sellers
               </Link>
 
+              <Link
+                to="/orders"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1C2541]
+                border border-[#3A506B]/30 hover:border-amber-400 transition text-slate-200"
+              >
+                <FiUserCheck size={18} className="text-amber-300" />
+                Orders
+              </Link>
             </nav>
           </aside>
-
         </div>
       )}
     </>
