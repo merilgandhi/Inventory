@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, useRef, useCallback } from "react"
 import client from "../Services/clientServices";
 import toast from "react-hot-toast";
 import { SuccessToast, ErrorToast } from "../components/ToastStyles";
-import { variantCellTotals, productTotals, grandTotal } from "../utils/orderCalculations";
+import { variantCellTotals, productTotals, grandTotal,} from "../utils/orderCalculations";
 
 type Seller = { id: number; name: string };
 type RawVariant = any;
@@ -163,9 +163,12 @@ export default function Orders() {
         if (!c.strips || c.strips <= 0) continue;
         items.push({
           productId: p.id,
-          productVariantId: gv.id,
+          productVariationId: gv.id,
           quantity: c.strips,
+          subtotal: c.subtotal,
           total: c.total,
+          gstTotal: c.total - c.subtotal,
+          grandTotal: c.total,
         });
       }
     }
