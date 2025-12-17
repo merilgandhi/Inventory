@@ -9,11 +9,14 @@ import {
   FiMenu,
   FiX,
   FiShoppingCart,
+  FiClipboard,
+  FiFilePlus,
 } from "react-icons/fi";
 
 const Sidebar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [productOpen, setProductOpen] = useState(true);
+  const [ordersOpen, setOrdersOpen] = useState(true);
 
   const location = useLocation();
   const isActive = (path: string) => location.pathname.includes(path);
@@ -93,18 +96,55 @@ const Sidebar: React.FC = () => {
             <FiUserCheck className="text-amber-300" size={18} />
             Sellers
           </Link>
-          <Link
-            to="/orders"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition border hover:border-amber-400
+          {/* ORDERS */}
+          <div>
+            <button
+              onClick={() => setOrdersOpen(!ordersOpen)}
+              className="w-full flex justify-between items-center px-4 py-3
+              rounded-xl bg-[#1C2541] border border-[#3A506B]/30
+              hover:border-amber-400 hover:bg-[#1C2541]/95 transition"
+            >
+              <span className="flex items-center gap-3 text-slate-200 font-medium">
+                <FiShoppingCart className="text-amber-300" size={18} />
+                Orders
+              </span>
+              <FiChevronDown
+                className={`${
+                  ordersOpen ? "rotate-180" : ""
+                } transition text-slate-200`}
+              />
+            </button>
+
+            {ordersOpen && (
+              <div className="ml-6 mt-3 space-y-3 animate-fadeIn">
+                <Link
+                  to="/orders"
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition border 
                   ${
                     isActive("/orders")
                       ? "bg-amber-400/20 border-amber-300"
                       : "border-transparent hover:bg-[#1C2541]"
                   } text-slate-200`}
-          >
-            <FiShoppingCart size={16} className="text-amber-300" />
-            Order
-          </Link>
+                >
+                  <FiFilePlus size={16} className="text-amber-300" />
+                  Create Order
+                </Link>
+
+                <Link
+                  to="/products/variations"
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition border 
+                  ${
+                    isActive("/products/variations")
+                      ? "bg-amber-400/20 border-amber-300"
+                      : "border-transparent hover:bg-[#1C2541]"
+                  } text-slate-200`}
+                >
+                  <FiClipboard size={16} className="text-amber-300" />
+                  Orders List
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
       </aside>
 
@@ -189,15 +229,54 @@ const Sidebar: React.FC = () => {
                 Sellers
               </Link>
 
-              <Link
-                to="/orders"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1C2541]
-                border border-[#3A506B]/30 hover:border-amber-400 transition text-slate-200"
-              >
-                <FiUserCheck size={18} className="text-amber-300" />
+              <div>
+            <button
+              onClick={() => setOrdersOpen(!ordersOpen)}
+              className="w-full flex justify-between items-center px-4 py-3
+              rounded-xl bg-[#1C2541] border border-[#3A506B]/30
+              hover:border-amber-400 hover:bg-[#1C2541]/95 transition"
+            >
+              <span className="flex items-center gap-3 text-slate-200 font-medium">
+                <FiShoppingCart className="text-amber-300" size={18} />
                 Orders
-              </Link>
+              </span>
+              <FiChevronDown
+                className={`${
+                  ordersOpen ? "rotate-180" : ""
+                } transition text-slate-200`}
+              />
+            </button>
+
+            {ordersOpen && (
+              <div className="ml-6 mt-3 space-y-3 animate-fadeIn">
+                <Link
+                  to="/orders"
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition border 
+                  ${
+                    isActive("/orders")
+                      ? "bg-amber-400/20 border-amber-300"
+                      : "border-transparent hover:bg-[#1C2541]"
+                  } text-slate-200`}
+                >
+                  <FiFilePlus size={16} className="text-amber-300" />
+                  Create Order
+                </Link>
+
+                <Link
+                  to="/products/variations"
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition border 
+                  ${
+                    isActive("/products/variations")
+                      ? "bg-amber-400/20 border-amber-300"
+                      : "border-transparent hover:bg-[#1C2541]"
+                  } text-slate-200`}
+                >
+                  <FiClipboard size={16} className="text-amber-300" />
+                  Orders List
+                </Link>
+              </div>
+            )}
+          </div>
             </nav>
           </aside>
         </div>
