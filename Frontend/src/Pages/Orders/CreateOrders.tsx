@@ -19,10 +19,13 @@ export default function CreateOrders({
   const [selectedSeller, setSelectedSeller] = useState<number | "">("");
   const [orderQuantities, setOrderQuantities] = useState<any>({});
   const [creating, setCreating] = useState(false);
+  const [loadingOrder, setLoadingOrder] = useState(false);
   const navigate = useNavigate();
+
   const getQty = (productId: number, variationId: number) => {
     return orderQuantities[productId]?.[variationId]?.quantity || 0;
   };
+
   const { orderId } = useParams<{ orderId: string }>();
   const orderid = orderId ? Number(orderId) : undefined;
 
@@ -31,8 +34,8 @@ export default function CreateOrders({
   const mode: OrderMode = pathname.includes("/edit")
     ? "update"
     : pathname.includes("/view")
-    ? "view"
-    : "create";
+      ? "view"
+      : "create";
 
   const updateQuantity = (
     productId: number,
@@ -53,46 +56,75 @@ export default function CreateOrders({
 
   useEffect(() => {
     if (mode === "view" || mode === "update") {
-      if (!orderid) return;
+      if (!orderid || products.length === 0) return;
       fetchOrderById(orderid);
     }
   }, [orderid, mode, products]);
 
   const fetchOrderById = async (id: number) => {
     try {
+      setLoadingOrder(true);
       const orderData = await OrderService.getOrderById(id);
       setSelectedSeller(orderData.seller.id);
 
       const quantities: any = {};
 
       orderData.items.forEach((item: any) => {
+        // Add null checks for item properties
+        if (!item || !item.product || !item.productVariation) {
+          console.warn("Skipping invalid item:", item);
+          return;
+        }
+
         const productId = item.product.id;
+        const productVariationId = item.productVariation.id; // This is the vId in your frontend
+
+        if (!productId || !productVariationId) {
+          console.warn("Missing productId or productVariationId:", item);
+          return;
+        }
 
         const product = products.find((p) => p.id === productId);
-        if (!product) return;
+        if (!product) {
+          console.warn(`Product not found: ${productId}`);
+          return;
+        }
 
+        // Match by vId (which corresponds to productVariation.id from API)
         const matchedVariant = product.variants.find(
-          (v) => v.name === item.productVariation.variation.name
+          (v) => v.vId === productVariationId
         );
 
-        if (!matchedVariant) return;
+        if (!matchedVariant) {
+          console.warn(`Variant not found for productVariationId: ${productVariationId}`, {
+            productId,
+            productVariationId,
+            availableVariants: product.variants.map(v => ({ vId: v.vId, id: v.id, name: v.name }))
+          });
+          return;
+        }
 
         if (!quantities[productId]) {
           quantities[productId] = {};
         }
 
-        quantities[productId][matchedVariant.id] = {
+        // Store using vId as the key
+        quantities[productId][matchedVariant.vId] = {
           quantity: item.quantity,
           orderProductVariationId: item.id,
         };
       });
 
+      console.log("Loaded quantities:", quantities);
       setOrderQuantities(quantities);
     } catch (error) {
       console.error("Error fetching order:", error);
       toast.custom(() => <ErrorToast message="Failed to load order data" />);
+    } finally {
+      setLoadingOrder(false);
     }
   };
+
   const globalVariants = useMemo(() => {
     const map = new Map<number, { id: number; name: string }>();
 
@@ -136,19 +168,27 @@ export default function CreateOrders({
           const qty = Number(data?.quantity || 0);
 
           if (qty > 0) {
-            result.push({
+            const itemData: any = {
               productId: Number(productId),
               productVariationId: Number(variantId),
               quantity: qty,
-              orderProductVariationId: data.orderProductVariationId,
-            });
+            };
+
+            // For update mode, include the orderProductVariationId
+            if (mode === "update" && data.orderProductVariationId) {
+              itemData.orderProductVariationId = data.orderProductVariationId;
+            }
+
+            result.push(itemData);
           }
         });
       }
     );
 
     return result;
-  }, [orderQuantities]);
+  }, [orderQuantities, mode]);
+
+  console.log("Items to submit:", items);
 
   const submitOrder = async () => {
     if (!selectedSeller) {
@@ -166,38 +206,44 @@ export default function CreateOrders({
 
       if (mode === "update") {
         await OrderService.updateOrder(orderid!, { items });
+        toast.custom(() => <SuccessToast message="Order updated successfully" />);
       } else {
         await OrderService.createOrder({
           sellerId: selectedSeller,
           items,
           grandTotal: grandTotal(products, globalVariants, getQty),
         });
+        toast.custom(() => <SuccessToast message="Order created successfully" />);
       }
 
-      toast.custom(() => <SuccessToast message="Order saved successfully" />);
       onSuccess?.();
-    } catch {
+      navigate("/orderslist");
+    } catch (error) {
+      console.error("Order submission error:", error);
       toast.custom(() => <ErrorToast message="Failed to process order" />);
     } finally {
       setCreating(false);
     }
   };
 
-  const colSpan = globalVariants.length + 4;
+  const colSpan = globalVariants.length * 3 + 4;
 
   const doTotal = useMemo(() => {
     const total: any = {};
     const orderItem = Object.keys(orderQuantities) as unknown as number[];
+
     orderItem.forEach((item: number) => {
       const product = products.find((pro) => pro.id == item);
       if (!product) {
         return;
       }
+
       let productTotal = 0;
+
       product.variants.forEach((variant) => {
-        productTotal +=
-          (Number(orderQuantities[item]?.[variant.id]?.quantity) || 0) *
-          Number(variant.price);
+        // Use variant.vId to match how quantities are stored
+        const qty = Number(orderQuantities[item]?.[variant.vId]?.quantity) || 0;
+        productTotal += qty * Number(variant.price);
       });
 
       const gst = (productTotal * product.gst) / 100;
@@ -207,8 +253,10 @@ export default function CreateOrders({
         finalTotal: productTotal + gst,
       };
     });
+
     return total;
   }, [orderQuantities, products]);
+
   const footerTotals = useMemo(() => {
     let subtotal = 0;
     let gst = 0;
@@ -234,38 +282,56 @@ export default function CreateOrders({
           ← Back to Orders List
         </button>
       )}
+
+      {/* View Mode Banner */}
+      {mode === "view" && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <span className="text-sm font-medium text-blue-800">
+              Viewing Order #{orderid} in read-only mode
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">
           {mode === "update"
-            ? "Update Order"
+            ? `Update Order #${orderid}`
             : mode === "view"
-            ? "View Order"
-            : "Create Order"}
+              ? `View Order #${orderid}`
+              : "Create Order"}
         </h1>
 
         {mode !== "view" && (
           <button
             onClick={submitOrder}
-            disabled={creating}
-            className="px-4 py-2 bg-slate-900 text-white rounded font-semibold"
+            disabled={creating || loadingOrder}
+            className="px-4 py-2 bg-slate-900 text-white rounded font-semibold hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {creating
               ? mode === "update"
                 ? "Updating..."
                 : "Creating..."
               : mode === "update"
-              ? "Update Order"
-              : "Create Order"}
+                ? "Update Order"
+                : "Create Order"}
           </button>
         )}
       </div>
 
       {/* Seller Selection */}
       <div className="bg-white p-4 rounded shadow border flex items-center gap-4">
-        <label className="font-medium text-slate-700">Select Seller</label>
+        <label className="font-medium text-slate-700">
+          {mode === "create" ? "Select Seller:" : "Seller:"}
+        </label>
         <select
           disabled={mode !== "create"}
-          className="px-3 py-2 border rounded"
+          className={`px-3 py-2 border rounded ${mode !== "create" ? "bg-slate-100 cursor-not-allowed text-slate-700" : ""
+            }`}
           value={selectedSeller}
           onChange={(e) =>
             setSelectedSeller(e.target.value ? Number(e.target.value) : "")
@@ -279,7 +345,13 @@ export default function CreateOrders({
           ))}
         </select>
       </div>
-      {!selectedSeller && mode === "create" ? (
+
+      {loadingOrder ? (
+        <div className="bg-white p-8 rounded shadow text-center border">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mb-4"></div>
+          <p className="text-slate-600">Loading order details...</p>
+        </div>
+      ) : !selectedSeller && mode === "create" ? (
         <div className="bg-white p-6 rounded shadow text-center text-slate-500 border">
           Please select a seller to view products & variants.
         </div>
@@ -375,24 +447,24 @@ export default function CreateOrders({
                     </td>
 
                     {/* Variant Cells */}
-                    {globalVariants.map((gv) => {
+                    {globalVariants.map((gv, index) => {
                       const item = product.variants.find((v) => v.id === gv.id);
 
                       return item ? (
                         <OrderVariantCell
-                          key={`${product.id}-${item.id}`}
+                          key={`${product.id}-${item.vId}_${index}`}
                           variation={item}
-                          quantity={getQty(product.id, item.id)}
+                          quantity={getQty(product.id, item.vId)}
                           disabled={mode === "view"}
                           onChange={(val) =>
-                            updateQuantity(product.id, item.id, val)
+                            updateQuantity(product.id, item.vId, val)
                           }
                         />
                       ) : (
                         <td
-                          key={`${product.id}-${gv.id}`}
+                          key={`${product.id}-${gv.id}-empty`}
                           colSpan={3}
-                          className="text-center text-slate-400 border-r"
+                          className="text-center text-slate-400 border-r py-3"
                         >
                           —
                         </td>

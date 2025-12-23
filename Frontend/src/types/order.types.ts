@@ -4,8 +4,9 @@ export type Seller = {
 };
 
 export type Variant = {
-  id: number;               
-  variationId: number;      
+  id: number;
+  vId: number;
+  variationId: number;
   name: string;
   price: number;
   boxQuantity: number;
@@ -13,9 +14,9 @@ export type Variant = {
 export type OrderItem = {
   id: number;
   product: { id: number; name: string };
-  productVariation: { 
-    id: number; 
-    variation: { id: number; name: string } 
+  productVariation: {
+    id: number;
+    variation: { id: number; name: string }
   };
   quantity: number;
   unitPrice: number;
