@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiEdit, FiTrash2, FiPrinter } from "react-icons/fi";
 import client from "../../services/clientServices";
 import toast from "react-hot-toast";
-import { ErrorToast } from "../../components/ToastStyles";
+import { ErrorToast, SuccessToast } from "../../components/ToastStyles";
 import { useNavigate } from "react-router-dom";
 import DeleteConfirmation from "../../components/DeleteConfirmation";
+
 const OrdersList = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; orderId: number | null; isDeleting: boolean }>({ open: false, orderId: null, isDeleting: false });
+  const [printingOrderId, setPrintingOrderId] = useState<number | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{ 
+    open: boolean; 
+    orderId: number | null; 
+    isDeleting: boolean 
+  }>({ 
+    open: false, 
+    orderId: null, 
+    isDeleting: false 
+  });
   const navigate = useNavigate();
 
   const fetchOrders = async () => {
@@ -26,7 +36,6 @@ const OrdersList = () => {
   useEffect(() => {
     fetchOrders();
   }, []);
-
 
   const openDeleteModal = (orderId: number) => {
     setDeleteModal({ open: true, orderId, isDeleting: false });
@@ -56,6 +65,36 @@ const OrdersList = () => {
 
   const handleUpdate = (orderId: number) => {
     navigate(`/orders/edit/${orderId}`);
+  };
+
+  const handlePrint = async (orderId: number) => {
+    setPrintingOrderId(orderId);
+    
+    try {
+      const response = await client.get(`/invoice/${orderId}`, {
+        responseType: 'blob', 
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Invoice_Order_${orderId}.pdf`; 
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.custom(() => <SuccessToast message="Invoice downloaded successfully" />);
+    } catch (error: any) {
+      console.error("Print error:", error);
+      toast.custom(() => (
+        <ErrorToast 
+          message={error?.response?.data?.message || "Failed to download invoice"} 
+        />
+      ));
+    } finally {
+      setPrintingOrderId(null);
+    }
   };
 
   return (
@@ -122,18 +161,42 @@ const OrdersList = () => {
 
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-4">
-                    <FiEye
-                      className="cursor-pointer text-blue-600 hover:text-blue-800"
+                    <button
                       onClick={() => handleView(order.id)}
-                    />
-                    <FiEdit
-                      className="cursor-pointer text-amber-600 hover:text-amber-800"
+                      className="text-blue-600 hover:text-blue-800 transition-colors"
+                      title="View Order"
+                    >
+                      <FiEye size={18} />
+                    </button>
+                    
+                    <button
                       onClick={() => handleUpdate(order.id)}
-                    />
-                    <FiTrash2
-                      className="cursor-pointer text-red-600 hover:text-red-800"
+                      className="text-amber-600 hover:text-amber-800 transition-colors"
+                      title="Edit Order"
+                    >
+                      <FiEdit size={18} />
+                    </button>
+                    
+                    <button
+                      onClick={() => handlePrint(order.id)}
+                      disabled={printingOrderId === order.id}
+                      className="text-green-600 hover:text-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Download Invoice"
+                    >
+                      {printingOrderId === order.id ? (
+                        <div className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-green-600 border-t-transparent" />
+                      ) : (
+                        <FiPrinter size={18} />
+                      )}
+                    </button>
+                    
+                    <button
                       onClick={() => openDeleteModal(order.id)}
-                    />
+                      className="text-red-600 hover:text-red-800 transition-colors"
+                      title="Delete Order"
+                    >
+                      <FiTrash2 size={18} />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -149,6 +212,7 @@ const OrdersList = () => {
           </tbody>
         </table>
       </div>
+
       {/* Delete Confirmation Modal */}
       <DeleteConfirmation
         isOpen={deleteModal.open}
