@@ -1,73 +1,104 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
+  <h1>📦 Inventory Management Dashboard</h1>
+  <p>Modern, modular inventory and order management system built with React, TypeScript, and Vite.</p>
+  <img src="public/logo.png" alt="Inventory Dashboard" width="180"/>
+</div>
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Overview
 
-## React Compiler
+This project is a feature-rich inventory and order management dashboard. It provides authentication, product and order flows, and a clean, modular architecture for easy extension and maintenance.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Tech Stack:**
+- React 18 + TypeScript
+- Vite (blazing fast dev/build)
+- React Context for global state
+- CSS Modules for styling
+- Modular file structure for scalability
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🗂️ Project Structure
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+  components/      # Reusable UI components (Pagination, Sidebar, DeleteConfirmation, etc.)
+  context/         # React Contexts (AuthContext)
+  layouts/         # Layouts (DashboardLayout)
+  Pages/           # Route-level pages (Orders, Products, Auth, Dashboard)
+  Services/        # API logic (order.service.ts, clientServices.ts)
+  utils/           # Data transformation and calculations
+  hooks/           # Custom React hooks
+  routes/          # Route guards (ProtectedRoute)
+  types/           # TypeScript types
+  Global/          # Global UI (Header, Footer)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🏗️ Key Features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Authentication:** Login flow using React Context ([src/context/AuthContext.tsx](src/context/AuthContext.tsx), [src/Pages/Auth/LogIn.tsx](src/Pages/Auth/LogIn.tsx))
+- **Order Management:** Create, list, and manage orders ([src/Pages/Orders/CreateOrders.tsx](src/Pages/Orders/CreateOrders.tsx), [src/Pages/Orders/OrdersList.tsx](src/Pages/Orders/OrdersList.tsx))
+- **Product Management:** Product listing and variations ([src/Pages/Products/ProductList.tsx](src/Pages/Products/ProductList.tsx), [src/Pages/Products/Variations.tsx](src/Pages/Products/Variations.tsx))
+- **Reusable Components:** Pagination, confirmation dialogs, sidebar, etc.
+- **API Integration:** All backend calls via service files ([src/Services/order.service.ts](src/Services/order.service.ts))
+- **Protected Routes:** Route guards for authenticated access ([src/routes/ProtectedRoute.tsx](src/routes/ProtectedRoute.tsx))
+
+---
+
+## ⚡ Getting Started
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+3. **Build for production:**
+   ```bash
+   npm run build
+   ```
+4. **Lint code:**
+   ```bash
+   npm run lint
+   ```
+5. **Type check:**
+   ```bash
+   tsc --noEmit
+   ```
+
+---
+
+## 🧩 Example Workflows
+
+- **Order Creation:** See [src/Pages/Orders/CreateOrders.tsx](src/Pages/Orders/CreateOrders.tsx) for form, service, and context usage.
+- **Sidebar/Layout:** [src/components/Sidebar.tsx](src/components/Sidebar.tsx), [src/layouts/DashboardLayout.tsx](src/layouts/DashboardLayout.tsx)
+- **Global State:** [src/context/AuthContext.tsx](src/context/AuthContext.tsx)
+
+---
+
+## 📝 Conventions & Patterns
+
+- **File Naming:** PascalCase for components/pages, camelCase for hooks/utils
+- **Component Style:** Function components with hooks
+- **API Calls:** Use service files, never direct fetch/axios in components
+- **State:** Context for global, hooks/local for component-specific
+- **Styling:** CSS modules and global styles ([src/App.css](src/App.css), [src/index.css](src/index.css))
+
+---
+
+## 📚 Further Reading
+
+- [Vite Documentation](https://vitejs.dev/)
+- [React Documentation](https://react.dev/)
+
+---
+
+<div align="center">
+  <b>Made with ❤️ for modern inventory management</b>
+</div>
