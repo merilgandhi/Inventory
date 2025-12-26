@@ -99,3 +99,34 @@ export const createOrderSchema = yup.object({
     .min(1, "At least one order item is required")
     .required("items are required"),
 });
+
+
+
+export const createOrderFromScanSchema = yup.object({
+  sellerId: yup
+    .number()
+    .typeError("sellerId must be a number")
+    .integer("sellerId must be an integer")
+    .positive("sellerId must be positive")
+    .required("sellerId is required"),
+
+  scannedItems: yup
+    .array()
+    .of(
+      yup.object({
+        barcode: yup
+          .string()
+          .trim()
+          .required("barcode is required"),
+
+        quantity: yup
+          .number()
+          .transform((v, o) => (o === "" || o === null ? undefined : v))
+          .integer("quantity must be an integer")
+          .positive("quantity must be greater than 0")
+          .optional(),
+      })
+    )
+    .min(1, "At least one scanned item is required")
+    .required("scannedItems is required"),
+});

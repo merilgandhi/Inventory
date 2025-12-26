@@ -7,6 +7,7 @@ import productRoutes from "@routes/productRoutes";
 import sellerRoutes from "@routes/sellerRoutes";
 import sellsRoutes from "@routes/sellsRoutes";
 import ordersRoutes from "@routes/ordersRoutes";
+import pdfRoutes from "@routes/pdfRoutes";
 import { swaggerSpec, swaggerUiMiddleware } from "@config/swagger";
 
 const app = express();
@@ -31,5 +32,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/sellers", sellerRoutes);
 app.use("/api/scan", ordersRoutes);
 app.use("/api/orders", sellsRoutes);
+app.use("/api/invoice", pdfRoutes);
+
 
 export default app;
