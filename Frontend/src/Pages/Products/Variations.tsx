@@ -133,8 +133,8 @@ const Variations = () => {
 
   return (
     <div className="p-6 space-y-4">
-      {/* Add Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold">Variations</h1>
         <button
           onClick={() => {
             setEditMode(false);

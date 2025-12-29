@@ -154,8 +154,8 @@ const Sellers = () => {
 
   return (
     <div className="p-6 space-y-4">
-      {/* Add Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold">Sellers</h1>
         <button
           onClick={openCreateDrawer}
           className="px-5 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-700 transition"

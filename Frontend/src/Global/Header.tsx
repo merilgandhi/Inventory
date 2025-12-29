@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FiUser, FiMenu, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -9,7 +9,10 @@ import logo from "/inventory.png";
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { isAuthenticated, logout, user } = useAuth();
+  const location = useLocation();
+  const { isAuthenticated, logout, user, loading } = useAuth();
+
+  const hideAuthControls = location.pathname === "/" || location.pathname === "/login";
 
   const handleLogout = () => {
     logout();
@@ -33,14 +36,14 @@ const Header: React.FC = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          {isAuthenticated && user && (
+          {!loading && !hideAuthControls && isAuthenticated && user && (
             <div className="px-4 py-2 bg-[#1C2541]/40 rounded-lg border border-[#3A506B]/30 flex items-center gap-3">
               <FiUser className="text-amber-300" />
               {user.username || user.email}
             </div>
           )}
 
-          {isAuthenticated && (
+          {!loading && !hideAuthControls && isAuthenticated && (
             <button
               onClick={handleLogout}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg"
@@ -60,14 +63,14 @@ const Header: React.FC = () => {
 
       {isOpen && (
         <div className="md:hidden bg-[#0B132B]/95 border-t border-[#1C2541] px-6 py-4 space-y-4 animate-fadeIn">
-          {isAuthenticated && user && (
+          {!loading && !hideAuthControls && isAuthenticated && user && (
             <div className="flex items-center gap-3 px-4 py-2 bg-[#1C2541]/40 rounded-lg border border-[#3A506B]/30">
               <FiUser className="text-amber-300" />
               {user.username || user.email}
             </div>
           )}
 
-          {isAuthenticated && (
+          {!loading && !hideAuthControls && isAuthenticated && (
             <button
               onClick={handleLogout}
               className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg">
