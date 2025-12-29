@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import client from "../services/clientServices";
+import client from "../Services/clientServices";
 import { FiEdit, FiTrash2, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
 import Pagination from "../components/Pagination";

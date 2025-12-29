@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import client from "../services/clientServices"; // IMPORTANT
+import client from "../Services/clientServices"; // IMPORTANT
 
 export interface UserType {
   username: string;

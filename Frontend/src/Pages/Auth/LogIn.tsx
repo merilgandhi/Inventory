@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import client from "../../services/clientServices";
+import client from "../../Services/clientServices";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { ErrorToast, SuccessToast } from "../../components/ToastStyles";

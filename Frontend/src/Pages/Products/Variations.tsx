@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import client from "../../services/clientServices";
+import client from "../../Services/clientServices";
 import { FiX, FiEdit, FiTrash2 } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";

@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import client from "../../services/clientServices";
+import client from "../../Services/clientServices";
 import toast from "react-hot-toast";
 import { SuccessToast, ErrorToast } from "../../components/ToastStyles";
 import Pagination from "../../components/Pagination";

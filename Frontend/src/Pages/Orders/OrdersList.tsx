@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FiEye, FiEdit, FiTrash2, FiPrinter } from "react-icons/fi";
-import client from "../../services/clientServices";
+import client from "../../Services/clientServices";
 import toast from "react-hot-toast";
 import { ErrorToast, SuccessToast } from "../../components/ToastStyles";
 import { useNavigate } from "react-router-dom";
