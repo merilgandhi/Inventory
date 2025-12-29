@@ -126,9 +126,9 @@ const ProductList = () => {
         </button>
       </div>
 
-      <div className="bg-white shadow rounded border overflow-hidden">
+      <div className="bg-white shadow rounded border overflow-hidden max-h-[calc(100vh-250px)] overflow-y-auto">
         <table className="w-full text-sm">
-          <thead className="bg-slate-900 text-white sticky top-0">
+          <thead className="bg-slate-900 text-white sticky top-0 z-10">
             <tr>
               <th className="p-3">
                 <div className="flex flex-col gap-1">

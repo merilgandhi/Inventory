@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import client from "../services/clientServices";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 type TodayReport = {
   date: string;
@@ -31,6 +32,19 @@ const Dashboard = () => {
   const [todayReport, setTodayReport] = useState<TodayReport | null>(null);
   const [sellerReport, setSellerReport] = useState<SellerReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedSellers, setExpandedSellers] = useState<Set<number>>(new Set());
+
+  const toggleSeller = (sellerId: number) => {
+    setExpandedSellers((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(sellerId)) {
+        newSet.delete(sellerId);
+      } else {
+        newSet.add(sellerId);
+      }
+      return newSet;
+    });
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -154,17 +168,29 @@ const Dashboard = () => {
                   key={seller.sellerId}
                   className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden"
                 >
-                  {/* SELLER HEADER */}
-                  <div className="bg-slate-50 border-b border-slate-200 p-5">
+                  {/* SELLER HEADER - Clickable */}
+                  <div 
+                    className="bg-slate-50 border-b border-slate-200 p-5 cursor-pointer hover:bg-slate-100 transition-colors"
+                    onClick={() => toggleSeller(seller.sellerId)}
+                  >
                     <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                          {seller.sellerName}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-slate-600">
-                          <span>{seller.contactNumber}</span>
-                          <span>•</span>
-                          <span>{seller.email}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="text-slate-600">
+                          {expandedSellers.has(seller.sellerId) ? (
+                            <FiChevronUp size={20} />
+                          ) : (
+                            <FiChevronDown size={20} />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                            {seller.sellerName}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm text-slate-600">
+                            <span>{seller.contactNumber}</span>
+                            <span>•</span>
+                            <span>{seller.email}</span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex gap-8 text-right">
@@ -182,8 +208,9 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  {/* PRODUCTS */}
-                  <div className="divide-y divide-slate-200">
+                  {/* PRODUCTS - Collapsible */}
+                  {expandedSellers.has(seller.sellerId) && (
+                    <div className="divide-y divide-slate-200">
                     {seller.products.map((product) => {
                       const productTotal = product.variations.reduce(
                         (sum, v) => sum + v.revenue,
@@ -249,6 +276,7 @@ const Dashboard = () => {
                       );
                     })}
                   </div>
+                  )}
                 </div>
               );
             })}

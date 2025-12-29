@@ -218,10 +218,10 @@ export default function CreateOrders({
   }, [products]);
 
   const [colWidths, setColWidths] = useState<Record<string, number>>({
-    product: 120,
-    subtotal: 120,
+    product: 100,
+    subtotal: 100,
     gst: 100,
-    total: 120,
+    total: 100,
   });
 
   useEffect(() => {
@@ -511,13 +511,13 @@ export default function CreateOrders({
                   <td key={gv.id} colSpan={3}></td>
                 ))}
 
-                <td className="px-4 py-4 text-right tabular-nums">
+                <td className="px-3 py3 text-right tabular-nums">
                   ₹ {footerTotals.subtotal.toFixed(2)}
                 </td>
-                <td className="px-4 py-4 text-right tabular-nums text-amber-300">
+                <td className="px-3 py-3 text-right tabular-nums text-amber-300">
                   ₹ {footerTotals.gst.toFixed(2)}
                 </td>
-                <td className="px-4 py-4 text-right tabular-nums text-emerald-300 text-lg">
+                <td className="px-2 py-3 text-right tabular-nums text-emerald-300 text-lg">
                   ₹ {footerTotals.total.toFixed(2)}
                 </td>
               </tr>
