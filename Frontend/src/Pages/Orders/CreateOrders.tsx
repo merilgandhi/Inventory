@@ -187,17 +187,16 @@ export default function CreateOrders({ onSuccess }: { onSuccess?: () => void }) 
 
   return (
     <form onSubmit={formik.handleSubmit} className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
       {!isCreateMode && (
         <button
           type="button"
           onClick={() => navigate("/orderslist")}
-          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+          className="px-4 py-2 bg-slate-900 text-white rounded font-semibold hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           ← Back to Orders List
         </button>
       )}
-
-      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">
           {mode === "update" ? `Update Order #${orderid}` : isViewMode ? `View Order #${orderid}` : "Create Order"}
         </h1>
@@ -320,7 +319,7 @@ export default function CreateOrders({ onSuccess }: { onSuccess?: () => void }) 
 
                 <tfoot>
                   <tr className="bg-slate-900 text-white font-semibold">
-                    <td style={stickyFooterLeft} className="px-4 py-2.5 text-right uppercase tracking-wide border border-slate-600">
+                    <td style={stickyFooterLeft} className="px-2 py-2.5 text-right uppercase tracking-wide border border-slate-600 text-sm">
                       Grand Total
                     </td>
                     {globalVariants.map((gv) => (

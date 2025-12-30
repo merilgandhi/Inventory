@@ -62,14 +62,12 @@ const LogIn: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] flex flex-col">
-
+    <div className="login-page">
       <Header />
-
-      <div className="flex flex-1 justify-center items-center px-6">
+      <div className="flex flex-1 justify-center items-center px-6 p-40">
         <div className="w-full max-w-lg bg-white shadow-xl border border-gray-200 rounded-2xl p-10">
 
-          <h2 className="text-3xl font-semibold text-slate-900 text-center mb-8">
+          <h2 className="text-3xl font-semibold text-slate-900 text-center mb-8 ">
             Log In
           </h2>
 

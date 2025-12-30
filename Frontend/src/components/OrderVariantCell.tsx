@@ -8,7 +8,7 @@ type OrderVariantCellProps = {
   };
   onChange: (value: number) => void;
   disabled?: boolean;
-  maxQuantity?: number; // Optional max limit
+  maxQuantity?: number; 
 };
 
 const OrderVariantCell: React.FC<OrderVariantCellProps> = ({
