@@ -231,11 +231,12 @@ export default function CreateOrders({
       const next = { ...prev };
       globalVariants.forEach((gv) => {
         const key = `v-${gv.id}`;
-        if (!next[key]) next[key] = 160;
+        if (!next[key]) next[key] = 200;
       });
       return next;
     });
   }, [globalVariants]);
+
 
   const colSpan = globalVariants.length * 3 + 4;
 
@@ -371,158 +372,154 @@ export default function CreateOrders({
           Please select a seller to view products & variants.
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-auto">
-          <table
-            className="min-w-full border-collapse text-sm"
-            style={{ tableLayout: "fixed" }}
-          >
-            <thead>
-              <tr>
-                <th
-                  style={{
-                    ...headerLeftStyle,
-                    width: colWidths.product,
-                  }}
-                  className="text-left px-4 py-3 border-r text-slate-200 uppercase tracking-wide text-xs"
-                >
-                  Product
-                </th>
+        <div className="relative bg-white rounded-lg border shadow">
+          <div className="overflow-x-auto">
+            <div className="max-h-[600px] overflow-y-auto">
+              <table
+                className="min-w-[1600px] table-fixed border-collapse">
+                <thead>
+                  <tr>
+                    <th
+                      style={{ ...headerStyle, width: colWidths.product }}
+                      className="text-left px-4 py-3 border-r text-slate-200 uppercase tracking-wide text-xs">
+                      Product
+                    </th>
+                    {globalVariants.map((gv) => (
+                      <th
+                        key={gv.id}
+                        colSpan={3}
+                        style={{ ...headerStyle, width: 180 }}
+                        className="px-2 py-3 border-r"
+                      >
+                        <div className="text-amber-300 font-semibold text-xs uppercase tracking-wide whitespace-nowrap text-center">
+                          {gv.name}
+                        </div>
+                      </th>
+                    ))}
 
-                {globalVariants.map((gv) => (
-                  <th
-                    key={gv.id}
-                    colSpan={3}
-                    style={{ ...headerStyle, width: 180 }}
-                    className="px-2 py-3 border-r"
-                  >
-                    <div className="text-amber-300 font-semibold text-xs uppercase tracking-wide whitespace-nowrap text-center">
-                      {gv.name}
-                    </div>
-                  </th>
-                ))}
+                    <th
+                      style={{ ...headerStyle, width: colWidths.subtotal }}
+                      className="text-right px-4 py-3 border-r uppercase tracking-wide text-xs"
+                    >
+                      Subtotal
+                    </th>
+                    <th
+                      style={{ ...headerStyle, width: colWidths.gst }}
+                      className="text-right px-4 py-3 border-r uppercase tracking-wide text-xs"
+                    >
+                      GST
+                    </th>
+                    <th
+                      style={{ ...headerStyle, width: colWidths.total }}
+                      className="text-right px-4 py-3 uppercase tracking-wide text-xs"
+                    >
+                      Total
+                    </th>
+                  </tr>
+                </thead>
 
-                <th
-                  style={{ ...headerStyle, width: colWidths.subtotal }}
-                  className="text-right px-4 py-3 border-r uppercase tracking-wide text-xs"
-                >
-                  Subtotal
-                </th>
-                <th
-                  style={{ ...headerStyle, width: colWidths.gst }}
-                  className="text-right px-4 py-3 border-r uppercase tracking-wide text-xs"
-                >
-                  GST
-                </th>
-                <th
-                  style={{ ...headerStyle, width: colWidths.total }}
-                  className="text-right px-4 py-3 uppercase tracking-wide text-xs"
-                >
-                  Total
-                </th>
-              </tr>
-            </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan={colSpan}
+                        className="p-8 text-center text-slate-500"
+                      >
+                        Loading products…
+                      </td>
+                    </tr>
+                  ) : products.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={colSpan}
+                        className="p-8 text-center text-slate-500"
+                      >
+                        No products available
+                      </td>
+                    </tr>
+                  ) : (
+                    products.map((product) => (
+                      <tr
+                        key={product.id}
+                        className="align-top hover:bg-slate-50 transition-colors"
+                      >
+                        <td
+                          style={{ ...stickyLeftStyle, width: colWidths.product }}
+                          className="px-4 py-3 border-r"
+                        >
+                          {product.name}
+                        </td>
 
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={colSpan}
-                    className="p-8 text-center text-slate-500"
-                  >
-                    Loading products…
-                  </td>
-                </tr>
-              ) : products.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={colSpan}
-                    className="p-8 text-center text-slate-500"
-                  >
-                    No products available
-                  </td>
-                </tr>
-              ) : (
-                products.map((product) => (
-                  <tr
-                    key={product.id}
-                    className="align-top hover:bg-slate-50 transition-colors"
-                  >
+
+                        {globalVariants.map((gv, index) => {
+                          const item = product.variants.find((v) => v.id === gv.id);
+
+                          return item ? (
+                            <OrderVariantCell
+                              key={`${product.id}-${item.vId}_${index}`}
+                              variation={item}
+                              quantity={getQty(product.id, item.vId)}
+                              disabled={mode === "view"}
+                              onChange={(val) =>
+                                updateQuantity(product.id, item.vId, val)
+                              }
+                            />
+                          ) : (
+                            <td
+                              key={`${product.id}-${gv.id}-empty`}
+                              colSpan={3}
+                              className="text-center text-slate-400 border-r py-3"
+                            >
+                              —
+                            </td>
+                          );
+                        })}
+
+                        <td className="px-4 py-3 text-right border-r tabular-nums text-slate-700">
+                          {doTotal[product.id]?.productTotal?.toFixed(2) || "0.00"}
+                        </td>
+                        <td className="px-4 py-3 text-right border-r tabular-nums text-slate-700">
+                          {doTotal[product.id]?.gst?.toFixed(2) || "0.00"}
+                        </td>
+                        <td className="px-4 py-3 text-right tabular-nums font-semibold text-slate-800">
+                          {doTotal[product.id]?.finalTotal?.toFixed(2) || "0.00"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+
+                <tfoot
+                  style={footerstyle}>
+                  <tr className="bg-slate-900 text-white font-semibold">
                     <td
                       style={{
                         ...(stickyLeftStyle as React.CSSProperties),
                         width: colWidths.product,
                       }}
-                      className="px-4 py-3 border-r bg-slate-50 font-medium text-slate-700"
+                      className="px-4 py-4 text-right uppercase tracking-wide"
                     >
-                      {product.name}
+                      Grand Total
                     </td>
 
-                    {globalVariants.map((gv, index) => {
-                      const item = product.variants.find((v) => v.id === gv.id);
+                    {globalVariants.map((gv) => (
+                      <td key={gv.id} colSpan={3}></td>
+                    ))}
 
-                      return item ? (
-                        <OrderVariantCell
-                          key={`${product.id}-${item.vId}_${index}`}
-                          variation={item}
-                          quantity={getQty(product.id, item.vId)}
-                          disabled={mode === "view"}
-                          onChange={(val) =>
-                            updateQuantity(product.id, item.vId, val)
-                          }
-                        />
-                      ) : (
-                        <td
-                          key={`${product.id}-${gv.id}-empty`}
-                          colSpan={3}
-                          className="text-center text-slate-400 border-r py-3"
-                        >
-                          —
-                        </td>
-                      );
-                    })}
-
-                    <td className="px-4 py-3 text-right border-r tabular-nums text-slate-700">
-                      {doTotal[product.id]?.productTotal?.toFixed(2) || "0.00"}
+                    <td className="px-3 py3 text-right tabular-nums">
+                      ₹ {footerTotals.subtotal.toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-right border-r tabular-nums text-slate-700">
-                      {doTotal[product.id]?.gst?.toFixed(2) || "0.00"}
+                    <td className="px-3 py-3 text-right tabular-nums text-amber-300">
+                      ₹ {footerTotals.gst.toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums font-semibold text-slate-800">
-                      {doTotal[product.id]?.finalTotal?.toFixed(2) || "0.00"}
+                    <td className="px-2 py-3 text-right tabular-nums text-emerald-300 text-lg">
+                      ₹ {footerTotals.total.toFixed(2)}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-
-            <tfoot>
-              <tr className="bg-slate-900 text-white font-semibold">
-                <td
-                  style={{
-                    ...(stickyLeftStyle as React.CSSProperties),
-                    width: colWidths.product,
-                  }}
-                  className="px-4 py-4 text-right uppercase tracking-wide"
-                >
-                  Grand Total
-                </td>
-
-                {globalVariants.map((gv) => (
-                  <td key={gv.id} colSpan={3}></td>
-                ))}
-
-                <td className="px-3 py3 text-right tabular-nums">
-                  ₹ {footerTotals.subtotal.toFixed(2)}
-                </td>
-                <td className="px-3 py-3 text-right tabular-nums text-amber-300">
-                  ₹ {footerTotals.gst.toFixed(2)}
-                </td>
-                <td className="px-2 py-3 text-right tabular-nums text-emerald-300 text-lg">
-                  ₹ {footerTotals.total.toFixed(2)}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+                </tfoot>
+              </table>
+            </div>
+          </div>
         </div>
       )}
     </form>
@@ -532,20 +529,20 @@ export default function CreateOrders({
 const stickyLeftStyle: React.CSSProperties = {
   position: "sticky",
   left: 0,
-  zIndex: 20,
   background: "#f8fafc",
+  zIndex: 25,
 };
-
 const headerStyle: React.CSSProperties = {
+  position: "sticky",
+  top: 0,
   background: "#0f172a",
   color: "#e5e7eb",
-  fontWeight: 600,
-  borderBottom: "1px solid rgba(255,255,255,0.08)",
+  zIndex: 20,
 };
-
-const headerLeftStyle: React.CSSProperties = {
-  ...headerStyle,
+const footerstyle: React.CSSProperties = {
   position: "sticky",
-  left: 0,
-  zIndex: 30,
+  bottom: 0,
+  background: "#0f172a",
+  color: "#e5e7eb",
+  zIndex: 20,
 };

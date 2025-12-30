@@ -66,7 +66,7 @@ const OrderVariantCell: React.FC<OrderVariantCellProps> = ({
             onChange={handleChange}
             onBlur={handleBlur}
             className={`
-              w-full rounded-md border px-2 py-1 text-right text-xs
+              w-full rounded-sm border px-2 py-1 text-right text-xs
               tabular-nums
               ${showError ? "border-red-500" : ""}
               ${disabled
@@ -89,7 +89,7 @@ const OrderVariantCell: React.FC<OrderVariantCellProps> = ({
           disabled
           value={subCalculation.boxes}
           className="
-            w-full rounded-md border px-2 py-1 text-right text-xs
+            w-full rounded-sm border px-2 py-1 text-right text-xs
             tabular-nums bg-slate-50 text-slate-600
           "
         />
@@ -102,7 +102,7 @@ const OrderVariantCell: React.FC<OrderVariantCellProps> = ({
           disabled
           value={subCalculation.remaining}
           className="
-            w-full rounded-md border px-2 py-1 text-right text-xs
+            w-full rounded-sm border px-2 py-1 text-right text-xs
             tabular-nums bg-slate-50 text-slate-600
           "
         />

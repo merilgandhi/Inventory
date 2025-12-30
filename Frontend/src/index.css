@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 .toast-slide-in {
   animation: slideIn 0.35s ease forwards;
 }
