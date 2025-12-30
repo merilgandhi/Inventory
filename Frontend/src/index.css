@@ -99,3 +99,7 @@
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 193, 7, 0.75);
 }
+
+.min-h-screen{
+        max-width: calc(100% - (var(--spacing) * 64));
+}

@@ -55,7 +55,7 @@ const OrderVariantCell: React.FC<OrderVariantCellProps> = ({
   return (
     <>
       {/* Quantity */}
-      <td className="border-r px-2 py-2">
+      <td className="align-middle px-2 py-2">
         <div className="relative">
           <input
             type="text"
@@ -83,7 +83,7 @@ const OrderVariantCell: React.FC<OrderVariantCellProps> = ({
       </td>
 
       {/* Boxes */}
-      <td className="border-r px-2 py-2">
+      <td className=" align-middle px-2 py-2">
         <input
           type="text"
           disabled
@@ -96,7 +96,7 @@ const OrderVariantCell: React.FC<OrderVariantCellProps> = ({
       </td>
 
       {/* Remaining */}
-      <td className="border-r px-2 py-2">
+      <td className=" align-middle px-2 py-2">
         <input
           type="text"
           disabled
